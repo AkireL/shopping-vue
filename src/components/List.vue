@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { v4 as uuidv4 } from 'uuid';
 import { watch, computed } from 'vue'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
@@ -14,21 +15,23 @@ import {
     VAutocomplete,
     VContainer,
     VIcon,
-    VRow, VCol
+    VRow,
+    VCol
 } from 'vuetify/components'
 
 const props = withDefaults(
     defineProps<{
-        id: number
+        id: string
     }>(),
     {
-        id: 88
+        id: "88"
     }
 )
 
 const base = () => {
     return {
-        items: []
+        items: [
+        ]
     }
 }
 
@@ -60,66 +63,86 @@ const suggestion_items = [
 // Load localStorage data
 onMounted(() => {
     const item = readLocalStorage() ?? base()
-
     row.value = item
-})
+});
 
-const unCheckItems = computed(() => row.value.items.filter((item) => !item.check))
-const checkItems = computed(() => row.value.items.filter((item) => item.check))
+const unCheckItems = computed(() => row.value.items.filter((item) => !item.check));
+const checkItems = computed(() => row.value.items.filter((item) => item.check));
 
-// Event update when
 watch(row, () => {
-    // update localstorage
     const data = JSON.parse(localStorage.getItem('lists'))
 
     let index = data.findIndex((item) => {
-        return item.id === props.id
-    })
+        return item.id === props.id;
+    });
+
+    let total = row.value.items.reduce((previous, current) => previous+current.price, 0);
+    
+    row.value.price = total;
 
     data[index] = row.value
 
     localStorage.setItem('lists', JSON.stringify(data))
-})
+}, {deep: true});
 
-// read LocalStorage
 const readLocalStorage = () => {
     const data = JSON.parse(localStorage.getItem('lists'))
 
     return data.find((item) => {
-        return item.id === props.id
-    })
+        return item.id === props.id;
+    });
 }
 
-// Activate modal to confirm to deleted
 const activateTrash = (item: object) => {
     open.value = true
     itemSelected.value = item
 }
 
-// method to trash
 const trash = () => {
-    // close modal
-    open.value = false
-
-    let filteredItems = [...row.value.items]
+    open.value = false;
+    let filteredItems = [...row.value.items];
 
     filteredItems = filteredItems.filter((item) => {
-        return item.id !== itemSelected.value.id
-    })
+        return item.id !== itemSelected.value.id;
+    });
 
-    row.value.items = [...filteredItems]
+    row.value.items = [...filteredItems];
 
-    itemSelected.value = {}
+    itemSelected.value = {};
 }
 
 // Update row
 const updateRowCheckbox = (item: Object) => {
-    item.check = !item.check
+    item.check = !item.check;
+}
+
+const addItem = () => {
+    let rowTmp = {...row.value};
+
+    rowTmp.items = [
+        ...row.value.items, 
+        {
+            'id': uuidv4(),
+            'description': "",
+            'price': null
+        },
+    ];
+
+    rowTmp.noArticle = (rowTmp.items ?? []).length;
+
+    const total = rowTmp.items.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.price,
+    0,);
+    
+    rowTmp.price = total;
+
+    row.value = rowTmp;
 }
 </script>
 
 <template>
     <div style="padding: 100px">
+        <v-btn @click="addItem"> Add</v-btn>
         <v-container fluid>
             <v-row justify="center">
                 <v-col cols="12">
@@ -131,22 +154,22 @@ const updateRowCheckbox = (item: Object) => {
                             <tr>
                                 <th></th>
                                 <th>Descripción</th>
-                                <th>Precio</th>
+                                <th>Precio {{ row.price }}</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, key) in checkItems" :key="key">
+                            <tr v-for="(item, key) in checkItems" :key="item.id">
                                 <td>
                                     <v-checkbox color="green" :model-value="item.check"
                                         @update:model-value="() => updateRowCheckbox(item)"></v-checkbox>
                                 </td>
                                 <td>
-                                    <v-autocomplete v-model="item.description" :items="suggestion_items"
+                                    <v-autocomplete v-model="checkItems[key].description" :items="suggestion_items"
                                         label="item"></v-autocomplete>
                                 </td>
                                 <td style="width: 15%">
-                                    <v-text-field v-model.number="item.price" density="compact"
+                                    <v-text-field v-model.number="checkItems[key].price" density="compact"
                                         type="number"></v-text-field>
                                 </td>
                                 <td>
@@ -156,7 +179,7 @@ const updateRowCheckbox = (item: Object) => {
                             </tr>
                             <tr class="bg-blue-lighten-4">
                                 <td colspan="3" style="text-align: end">Total</td>
-                                <td style="text-align: start"></td>
+                                <td style="text-align: start">{{ checkItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
                             </tr>
                         </tbody>
                     </v-table>
@@ -174,16 +197,16 @@ const updateRowCheckbox = (item: Object) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(item, key) in unCheckItems" :key="key">
+                                    <tr v-for="(item, key) in unCheckItems" :key="item.id">
                                         <td>
                                             <v-checkbox color="green" :model-value="item.check"
                                                 @update:modelValue="() => updateRowCheckbox(item)"></v-checkbox>
                                         </td>
                                         <td>
-                                            <v-text-field v-model="item.description" density="compact"></v-text-field>
+                                            <v-text-field v-model="unCheckItems[key].description" density="compact"></v-text-field>
                                         </td>
                                         <td style="width: 15%">
-                                            <v-text-field v-model.number="item.price" density="compact"
+                                            <v-text-field v-model.number="unCheckItems[key].price" density="compact"
                                                 type="number"></v-text-field>
                                         </td>
                                         <td>
@@ -193,7 +216,7 @@ const updateRowCheckbox = (item: Object) => {
                                     </tr>
                                     <tr class="bg-green-lighten-4">
                                         <td colspan="3" style="text-align: end">Total</td>
-                                        <td style="text-align: start"></td>
+                                        <td style="text-align: start">{{ unCheckItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
                                     </tr>
                                 </tbody>
                             </v-table>
