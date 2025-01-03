@@ -17,7 +17,22 @@ import {
     VIcon,
     VRow,
     VCol
-} from 'vuetify/components'
+} from 'vuetify/components';
+
+interface List {
+    items: Item[],
+    id: string | null,
+    title: string | null,
+    price: number | null,
+    noArticle: number | null,
+};
+
+interface Item{
+    id: string,
+    description: string | null,
+    price: number | null,
+    check: boolean,
+};
 
 const props = withDefaults(
     defineProps<{
@@ -30,14 +45,17 @@ const props = withDefaults(
 
 const base = () => {
     return {
-        items: [
-        ]
-    }
+        id: uuidv4(),
+        title: null,
+        price: null,
+        noArticle:0,
+        items: [] as Item[],
+    } as List;
 }
 
-const row = ref(base())
-const open = ref<boolean>(false)
-const itemSelected = ref<Object>({})
+const row = ref<List>(base());
+const open = ref<boolean>(false);
+const itemSelected = ref<Item | null>(null);
 const suggestion_items = [
     'Jitomate',
     'zanahoria',
@@ -62,38 +80,41 @@ const suggestion_items = [
 
 // Load localStorage data
 onMounted(() => {
-    const item = readLocalStorage() ?? base()
-    row.value = item
+    const item = loadFromStorage() ?? base();
+    row.value = item;
 });
 
 const unCheckItems = computed(() => row.value.items.filter((item) => !item.check));
 const checkItems = computed(() => row.value.items.filter((item) => item.check));
 
-watch(row, () => {
-    const data = JSON.parse(localStorage.getItem('lists'))
-
+const saveToLocalStorage = () => {
+    const data = JSON.parse(localStorage.getItem('lists') ?? '[]') as List[];
+    
     let index = data.findIndex((item) => {
         return item.id === props.id;
     });
 
-    let total = row.value.items.reduce((previous, current) => previous+current.price, 0);
-    
-    row.value.price = total;
-
     data[index] = row.value
 
     localStorage.setItem('lists', JSON.stringify(data))
+};
+
+watch(row, () => {
+    let total = row.value.items.reduce((previous: number, current: Item) => previous + (current.price ?? 0), 0);
+    row.value.price = total;
+
+    saveToLocalStorage();
 }, {deep: true});
 
-const readLocalStorage = () => {
-    const data = JSON.parse(localStorage.getItem('lists'))
+const loadFromStorage = () => {
+    const data = JSON.parse(localStorage.getItem('lists') ?? '[]') as List[];
 
     return data.find((item) => {
         return item.id === props.id;
     });
 }
 
-const activateTrash = (item: object) => {
+const activateTrash = (item: Item) => {
     open.value = true
     itemSelected.value = item
 }
@@ -103,16 +124,16 @@ const trash = () => {
     let filteredItems = [...row.value.items];
 
     filteredItems = filteredItems.filter((item) => {
-        return item.id !== itemSelected.value.id;
+        return item.id !== itemSelected.value?.id;
     });
 
     row.value.items = [...filteredItems];
 
-    itemSelected.value = {};
+    itemSelected.value = null;
 }
 
 // Update row
-const updateRowCheckbox = (item: Object) => {
+const updateRowCheckbox = (item: Item) => {
     item.check = !item.check;
 }
 
@@ -124,14 +145,15 @@ const addItem = () => {
         {
             'id': uuidv4(),
             'description': "",
-            'price': null
-        },
+            'price': null,
+            'check': false,
+        } as Item,
     ];
 
     rowTmp.noArticle = (rowTmp.items ?? []).length;
 
     const total = rowTmp.items.reduce(
-        (accumulator, currentValue) => accumulator + currentValue.price,
+        (accumulator: number, currentValue: Item) => accumulator + (currentValue.price ?? 0),
     0,);
     
     rowTmp.price = total;
@@ -165,11 +187,11 @@ const addItem = () => {
                                         @update:model-value="() => updateRowCheckbox(item)"></v-checkbox>
                                 </td>
                                 <td>
-                                    <v-autocomplete v-model="checkItems[key].description" :items="suggestion_items"
+                                    <v-autocomplete v-model="item.description" :items="suggestion_items"
                                         label="item"></v-autocomplete>
                                 </td>
                                 <td style="width: 15%">
-                                    <v-text-field v-model.number="checkItems[key].price" density="compact"
+                                    <v-text-field v-model.number="item.price" density="compact"
                                         type="number"></v-text-field>
                                 </td>
                                 <td>
@@ -203,10 +225,10 @@ const addItem = () => {
                                                 @update:modelValue="() => updateRowCheckbox(item)"></v-checkbox>
                                         </td>
                                         <td>
-                                            <v-text-field v-model="unCheckItems[key].description" density="compact"></v-text-field>
+                                            <v-text-field v-model="item.description" density="compact"></v-text-field>
                                         </td>
                                         <td style="width: 15%">
-                                            <v-text-field v-model.number="unCheckItems[key].price" density="compact"
+                                            <v-text-field v-model.number="item.price" density="compact"
                                                 type="number"></v-text-field>
                                         </td>
                                         <td>
