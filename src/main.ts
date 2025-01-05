@@ -8,7 +8,7 @@ import App from './App.vue'
 
 import HelloWorld from './components/HelloWorld.vue'
 import ListMain from './components/ListMain.vue'
-import List from './components/List.vue'
+import ShoppingList from './components/ShoppingList.vue'
 
 // import VueRouter from 'vue-router'
 import * as VueRouter from 'vue-router';
@@ -17,7 +17,7 @@ import * as VueRouter from 'vue-router';
 const routes = [
     { "path": '/main', "component": ListMain},
     { "path": '/about', "component": HelloWorld},
-    { "path": '/row/:id', "component": List, "props": true},
+    { "path": '/row/:id', "component": ShoppingList, "props": true},
 ]
 
 const router = VueRouter.createRouter({
