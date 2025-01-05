@@ -16,7 +16,8 @@ import {
     VCombobox,
     VContainer,
     VRow,
-    VCol
+    VCol,
+    VIcon
 } from 'vuetify/components';
 import type { List, Item } from "@/types/listTypes";
 import { suggestionItems } from '@/data/suggestionItems';
@@ -130,6 +131,7 @@ const addItem = () => {
 <template>
     <div style="padding: 100px">
         <v-container fluid>
+            <router-link to="/main"><v-icon icon="mdi-home"></v-icon>Regresar</router-link>
             <v-row justify="center">
                 <v-col cols="12">
                     <v-text-field v-model="row.title" label="Nombre"></v-text-field>
