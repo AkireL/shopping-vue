@@ -1,0 +1,22 @@
+
+export const suggestionItems = [
+    'Jitomate',
+    'zanahoria',
+    'tomate',
+    'papa',
+    'espinaca',
+    'calabaza',
+    'lechuga',
+    'cebolla',
+    'ajo',
+    'pescado',
+    'camarón',
+    'pepicha',
+    'huaxontle',
+    'maíz',
+    'alaches',
+    'acelga',
+    'platano',
+    'manzana',
+    'frijol',
+]
