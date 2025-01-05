@@ -9,30 +9,17 @@ import {
     VBtn,
     VDialog,
     VCard,
+    VCardTitle,
     VCardText,
     VCardActions,
     VTextField,
-    VAutocomplete,
+    VCombobox,
     VContainer,
-    VIcon,
     VRow,
     VCol
 } from 'vuetify/components';
-
-interface List {
-    items: Item[],
-    id: string | null,
-    title: string | null,
-    price: number | null,
-    noArticle: number | null,
-};
-
-interface Item{
-    id: string,
-    description: string | null,
-    price: number | null,
-    check: boolean,
-};
+import type { List, Item } from "@/types/listTypes";
+import { suggestionItems } from '@/data/suggestionItems';
 
 const props = withDefaults(
     defineProps<{
@@ -56,27 +43,6 @@ const base = () => {
 const row = ref<List>(base());
 const open = ref<boolean>(false);
 const itemSelected = ref<Item | null>(null);
-const suggestion_items = [
-    'Jitomate',
-    'zanahoria',
-    'tomate',
-    'papa',
-    'espinaca',
-    'calabaza',
-    'lechuga',
-    'cebolla',
-    'ajo',
-    'pescado',
-    'camarón',
-    'pepicha',
-    'huaxontle',
-    'maíz',
-    'alaches',
-    'acelga',
-    'platano',
-    'manzana',
-    'frijol'
-]
 
 // Load localStorage data
 onMounted(() => {
@@ -132,7 +98,6 @@ const trash = () => {
     itemSelected.value = null;
 }
 
-// Update row
 const updateRowCheckbox = (item: Item) => {
     item.check = !item.check;
 }
@@ -169,26 +134,32 @@ const addItem = () => {
             <v-row justify="center">
                 <v-col cols="12">
                     <v-text-field v-model="row.title" label="Nombre de la lista"></v-text-field>
-                    <p>Tu lista <v-icon icon="mdi-house"></v-icon></p>
+                    <v-card>
+                        <v-card-title>Pendientes</v-card-title>
+                        <v-card-text></v-card-text>
                     <!-- No check items -->
-                    <v-table v-if="checkItems.length > 0" density="compact" style="margin-top: 50px">
+                    <v-table v-if="unCheckItems.length > 0" density="compact" style="margin-top: 50px">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Descripción</th>
-                                <th>Precio {{ row.price }}</th>
+                                <th>Precio</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, key) in checkItems" :key="item.id">
+                            <tr v-for="(item, key) in unCheckItems" :key="item.id">
                                 <td>
                                     <v-checkbox color="green" :model-value="item.check"
-                                        @update:model-value="() => updateRowCheckbox(item)"></v-checkbox>
+                                        @update:model-value="() => updateRowCheckbox(item)"
+                                    ></v-checkbox>
                                 </td>
                                 <td>
-                                    <v-autocomplete v-model="item.description" :items="suggestion_items"
-                                        label="item"></v-autocomplete>
+                                    <v-combobox
+                                        v-model="item.description"
+                                        :items="suggestionItems"
+                                        density="compact"
+                                    ></v-combobox>
                                 </td>
                                 <td style="width: 15%">
                                     <v-text-field v-model.number="item.price" density="compact"
@@ -200,16 +171,20 @@ const addItem = () => {
                                 </td>
                             </tr>
                             <tr class="bg-blue-lighten-4">
-                                <td colspan="3" style="text-align: end">Total</td>
-                                <td style="text-align: start">{{ checkItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
+                                <td colspan="3" style="text-align: end; font-weight: 800;">Total</td>
+                                <td style="text-align: start; font-weight: 800;">$ {{ checkItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
                             </tr>
                         </tbody>
                     </v-table>
+                </v-card>
 
+                    <br>
+                    <br>
                     <!-- check items -->
                     <v-card>
+                        <v-card-title>Listos</v-card-title>
                         <v-card-text>
-                            <v-table v-if="unCheckItems.length > 0" density="compact">
+                            <v-table v-if="checkItems.length > 0" density="compact">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -219,13 +194,18 @@ const addItem = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(item, key) in unCheckItems" :key="item.id">
+                                    <tr v-for="(item, key) in checkItems" :key="item.id">
                                         <td>
                                             <v-checkbox color="green" :model-value="item.check"
-                                                @update:modelValue="() => updateRowCheckbox(item)"></v-checkbox>
+                                                @update:modelValue="() => updateRowCheckbox(item)"
+                                            ></v-checkbox>
                                         </td>
                                         <td>
-                                            <v-text-field v-model="item.description" density="compact"></v-text-field>
+                                            <v-combobox
+                                                v-model="item.description"
+                                                :items="suggestionItems"
+                                                density="compact"
+                                            ></v-combobox>
                                         </td>
                                         <td style="width: 15%">
                                             <v-text-field v-model.number="item.price" density="compact"
@@ -237,8 +217,8 @@ const addItem = () => {
                                         </td>
                                     </tr>
                                     <tr class="bg-green-lighten-4">
-                                        <td colspan="3" style="text-align: end">Total</td>
-                                        <td style="text-align: start">{{ unCheckItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
+                                        <td colspan="3" style="text-align: end; font-weight: 800;">Total</td>
+                                        <td style="text-align: start; font-weight: 800;">$ {{ unCheckItems.reduce((part, item) => part+item.price, 0) ?? 0 }}</td>
                                     </tr>
                                 </tbody>
                             </v-table>
