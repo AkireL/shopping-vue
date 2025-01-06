@@ -17,31 +17,37 @@ const headers: any = [
     { key: 'options', title: 'Opción' },
 ];
 
-const desserts = ref<List[]>();
+const shoppingLists = ref<List[]>();
 
 onMounted(() => {
-    desserts.value = JSON.parse(localStorage.getItem("lists") ?? '[]') as List[];
+    shoppingLists.value = JSON.parse(localStorage.getItem("lists") ?? '[]') as List[];
 });
 
-watch(desserts, () => {
-    localStorage.setItem('lists', JSON.stringify(desserts.value))
+watch(shoppingLists, () => {
+    localStorage.setItem('lists', JSON.stringify(shoppingLists.value))
 }, {deep: true});
 
-const onClick = (event: any) =>{
-    console.table(event);
+const onRemove = (item: List) => {
+    let copy: List[]  = [...shoppingLists.value ?? []];
+    
+    let index: number = copy.findIndex((actual: List) => actual.id === item.id);
+
+    if (index > 0) {
+        copy.splice(index, 1);
+        shoppingLists.value = copy;
+    }
 } 
 
 const addNewList = () => {
-    desserts.value = [
-        ...desserts.value,
-        {
-            "id": uuidv4(),
-            "title": "",
-            "noArticle": null,
-            "price": null, 
-            "items" : [],
-        }
-    ];
+    let newItem = {
+        "id": uuidv4(),
+        "title": "",
+        "noArticle": null,
+        "price": null, 
+        "items" : [],
+    };
+
+    shoppingLists.value = shoppingLists.value ? [...shoppingLists.value, newItem]: [newItem];
 }
 </script>
 <template>
@@ -54,10 +60,10 @@ const addNewList = () => {
                 <div><v-btn @click="addNewList" icon="mdi-plus" color="green" size="small"></v-btn></div>
                 <v-data-table
                 :headers="headers"
-                :items="desserts">
+                :items="shoppingLists">
                 <template v-slot:item.options="{ item }">
                     <v-btn icon="mdi-pencil" variant="plain" @click="() => $router.push({ path: `/row/${item.id}` })"></v-btn>
-                    <v-btn icon="mdi-trash-can" variant="plain" :value="item.id" @click="() => onClick(item)"></v-btn>
+                    <v-btn icon="mdi-trash-can" variant="plain" :value="item.id" @click="() => onRemove(item)"></v-btn>
                     <v-btn icon="mdi-clipboard-text-multiple" variant="plain" model-value="item.id"></v-btn>
                 </template>
             </v-data-table>
