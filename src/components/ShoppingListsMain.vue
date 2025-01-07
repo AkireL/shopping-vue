@@ -11,6 +11,7 @@ import {
     VCardActions,
     VDialog,
 } from 'vuetify/components'
+import { humanDate } from '@/utils/date';
 
 const headers: any = [
     { align: 'start', key: 'title', title: 'Titulo'},
@@ -49,18 +50,9 @@ const onRemove = () => {
 }
 
 const addNewList = () => {
-    const date = new Date();
-
-    const humanReadableDate = date.toLocaleDateString('es-ES', { // 'es-ES' es el formato para español
-        weekday: 'long',  // Día de la semana
-        year: 'numeric',  // Año completo
-        month: 'long',    // Nombre completo del mes
-        day: 'numeric'    // Día del mes
-    });
-
     let newItem = {
         "id": uuidv4(),
-        "title": humanReadableDate,
+        "title": humanDate(),
         "noArticle": 0,
         "price": 0, 
         "items" : [],
@@ -68,6 +60,23 @@ const addNewList = () => {
 
     shoppingLists.value = shoppingLists.value ? [...shoppingLists.value, newItem]: [newItem];
 }
+
+const onDuplicate = (listToDuplicated: List) => {
+    const tmp = {...listToDuplicated};
+    tmp.id = uuidv4();
+    tmp.title = tmp.title + " (Copy)";
+    tmp.items = tmp.items.map((item) => {
+        return {
+            ...item,
+            id: uuidv4(),
+        };
+    });
+
+    shoppingLists.value = shoppingLists.value ? 
+        [...shoppingLists.value, tmp]:
+        [tmp];
+}
+
 </script>
 <template>
     <div style="margin: 30px;">
@@ -83,7 +92,7 @@ const addNewList = () => {
                 <template v-slot:item.options="{ item }">
                     <v-btn icon="mdi-pencil" variant="plain" @click="() => $router.push({ path: `/row/${item.id}` })"></v-btn>
                     <v-btn icon="mdi-trash-can" variant="plain" :value="item.id" @click="() => {openModal = true; itemToRemove = item}"></v-btn>
-                    <v-btn icon="mdi-clipboard-text-multiple" variant="plain" model-value="item.id"></v-btn>
+                    <v-btn icon="mdi-clipboard-text-multiple" variant="plain" @click="() => onDuplicate(item)"></v-btn>
                 </template>
             </v-data-table>
         </v-card-text>
