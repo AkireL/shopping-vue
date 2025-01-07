@@ -4,23 +4,15 @@ import { watch, computed } from 'vue'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
 import {
-    VTable,
-    VCheckbox,
     VBtn,
-    VDialog,
-    VCard,
-    VCardTitle,
-    VCardText,
-    VCardActions,
-    VTextField,
-    VCombobox,
     VContainer,
     VRow,
     VCol,
+    VTextField,
     VIcon
 } from 'vuetify/components';
 import type { List, Item } from "@/types/listTypes";
-import { suggestionItems } from '@/data/suggestionItems';
+import Basket from "@/components/Basket.vue"
 
 const props = withDefaults(
     defineProps<{
@@ -42,10 +34,7 @@ const base = () => {
 }
 
 const row = ref<List>(base());
-const open = ref<boolean>(false);
-const itemSelected = ref<Item | null>(null);
 
-// Load localStorage data
 onMounted(() => {
     const item = loadFromStorage() ?? base();
     row.value = item;
@@ -81,28 +70,6 @@ const loadFromStorage = () => {
     });
 }
 
-const activateTrash = (item: Item) => {
-    open.value = true
-    itemSelected.value = item
-}
-
-const trash = () => {
-    open.value = false;
-    let filteredItems = [...row.value.items];
-
-    filteredItems = filteredItems.filter((item) => {
-        return item.id !== itemSelected.value?.id;
-    });
-
-    row.value.items = [...filteredItems];
-
-    itemSelected.value = null;
-}
-
-const updateRowCheckbox = (item: Item) => {
-    item.check = !item.check;
-}
-
 const addItem = () => {
     let rowTmp = { ...row.value };
 
@@ -126,6 +93,14 @@ const addItem = () => {
 
     row.value = rowTmp;
 }
+
+const onRemoveItem = (itemSelected: Item) => {
+    const filteredItems = row.value.items.filter((item) => {
+        return itemSelected.id !== item?.id;
+    });
+
+    row.value.items = [...filteredItems];
+}
 </script>
 
 <template>
@@ -138,107 +113,20 @@ const addItem = () => {
                     <v-btn @click="addItem" color="green" icon="mdi-plus"></v-btn>
                     <br>
                     <br>
-                    <v-card v-if="unCheckItems.length > 0">
-                        <v-card-title>Pendientes</v-card-title>
-                        <v-card-text>
-                            <v-table v-if="unCheckItems.length > 0" density="compact" style="margin-top: 50px">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50px;"></th>
-                                        <th>Descripción</th>
-                                        <th>Precio</th>
-                                        <th style="width: 50px;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, key) in unCheckItems" :key="item.id">
-                                        <td>
-                                            <v-checkbox color="green" :model-value="item.check"
-                                                @update:model-value="() => updateRowCheckbox(item)"></v-checkbox>
-                                        </td>
-                                        <td>
-                                            <v-combobox v-model="item.description" :items="suggestionItems"
-                                                density="compact"></v-combobox>
-                                        </td>
-                                        <td style="width: 15%">
-                                            <v-text-field v-model.number="item.price" density="compact"
-                                                type="number"></v-text-field>
-                                        </td>
-                                        <td>
-                                            <v-btn icon="mdi-trash-can" variant="plain" :value="item.id"
-                                                @click="() => activateTrash(item)"
-                                                style="margin: 0; padding: 0"></v-btn>
-                                        </td>
-                                    </tr>
-                                    <tr class="bg-blue-lighten-4">
-                                        <td colspan="3" style="text-align: end; font-weight: 800;">Total</td>
-                                        <td style="text-align: start; font-weight: 800;">$ {{ checkItems.reduce((part,
-                                            item) => part+item.price, 0) ?? 0 }}</td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
-                        </v-card-text>
-                    </v-card>
-
+                    <Basket
+                        title="Pendiente"
+                        v-model="unCheckItems"
+                        @removeItem="onRemoveItem"
+                    ></Basket>
                     <br>
                     <br>
-                    <!-- check items -->
-                    <v-card v-if="checkItems.length > 0">
-                        <v-card-title>Listos</v-card-title>
-                        <v-card-text>
-                            <v-table v-if="checkItems.length > 0" density="compact">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50px;"></th>
-                                        <th>Descripción</th>
-                                        <th>Precio</th>
-                                        <th style="width: 50px;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, key) in checkItems" :key="item.id">
-                                        <td>
-                                            <v-checkbox color="green" :model-value="item.check"
-                                                @update:modelValue="() => updateRowCheckbox(item)"></v-checkbox>
-                                        </td>
-                                        <td>
-                                            <v-combobox v-model="item.description" :items="suggestionItems"
-                                                density="compact"></v-combobox>
-                                        </td>
-                                        <td style="width: 15%">
-                                            <v-text-field v-model.number="item.price" density="compact"
-                                                type="number"></v-text-field>
-                                        </td>
-                                        <td>
-                                            <v-btn icon="mdi-trash-can" variant="plain" :value="item.id"
-                                                @click="() => activateTrash(item)"></v-btn>
-                                        </td>
-                                    </tr>
-                                    <tr class="bg-green-lighten-4">
-                                        <td colspan="3" style="text-align: end; font-weight: 800;">Total</td>
-                                        <td style="text-align: start; font-weight: 800;">$ {{ unCheckItems.reduce((part,
-                                            item) => part+item.price, 0) ?? 0 }}</td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
-                        </v-card-text>
-                    </v-card>
+                    <Basket
+                        title="Listos"
+                        v-model="checkItems"
+                        @removeItem="(event) => onRemoveItem(event)"
+                    ></Basket>
                 </v-col>
             </v-row>
         </v-container>
     </div>
-    <!-- Modal -->
-    <v-dialog v-model="open" width="auto">
-        <v-card title="Atención">
-            <v-card-text> ¿Desea eliminar? </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" @click="trash">Aceptar</v-btn>
-                <v-btn color="primary" @click="() => {
-                    open = false
-                    itemSelected = {}
-                }
-                    ">Cancelar</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
 </template>

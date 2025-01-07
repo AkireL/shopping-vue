@@ -4,12 +4,12 @@ import 'vuetify/styles';
 import { createApp } from 'vue';
 import App from './App.vue';
 
-import ListMain from './components/ListMain.vue';
+import ShoppingListsMain from './components/ShoppingListsMain.vue';
 import ShoppingList from './components/ShoppingList.vue';
 import * as VueRouter from 'vue-router';
 
 const routes = [
-  { path: '/main', component: ListMain },
+  { path: '/main', component: ShoppingListsMain },
   { path: '/row/:id', component: ShoppingList, props: true },
 ];
 
