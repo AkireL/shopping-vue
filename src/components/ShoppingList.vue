@@ -106,7 +106,7 @@ const onRemoveItem = (itemSelected: Item) => {
 <template>
     <div style="padding: 100px">
         <v-container fluid>
-            <router-link to="/main"><v-icon icon="mdi-home"></v-icon>Regresar</router-link>
+            <router-link to="/"><v-icon icon="mdi-home"></v-icon>Regresar</router-link>
             <v-row justify="center">
                 <v-col cols="12">
                     <v-text-field v-model="row.title" label="Nombre"></v-text-field>

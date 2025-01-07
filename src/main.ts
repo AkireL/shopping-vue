@@ -9,7 +9,7 @@ import ShoppingList from './components/ShoppingList.vue';
 import * as VueRouter from 'vue-router';
 
 const routes = [
-  { path: '/main', component: ShoppingListsMain },
+  { path: '/', component: ShoppingListsMain },
   { path: '/row/:id', component: ShoppingList, props: true },
 ];
 
