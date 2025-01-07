@@ -12,7 +12,7 @@ import {
     VIcon
 } from 'vuetify/components';
 import type { List, Item } from "@/types/listTypes";
-import Basket from "@/components/Basket.vue"
+import Articles from "@/components/Articles.vue"
 
 const props = withDefaults(
     defineProps<{
@@ -113,18 +113,18 @@ const onRemoveItem = (itemSelected: Item) => {
                     <v-btn @click="addItem" color="green" icon="mdi-plus"></v-btn>
                     <br>
                     <br>
-                    <Basket
+                    <Articles
                         title="Pendiente"
                         v-model="unCheckItems"
                         @removeItem="onRemoveItem"
-                    ></Basket>
+                    ></Articles>
                     <br>
                     <br>
-                    <Basket
+                    <Articles
                         title="Listos"
                         v-model="checkItems"
                         @removeItem="(event) => onRemoveItem(event)"
-                    ></Basket>
+                    ></Articles>
                 </v-col>
             </v-row>
         </v-container>
