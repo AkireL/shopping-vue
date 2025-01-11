@@ -104,7 +104,7 @@ const onRemoveItem = (itemSelected: Item) => {
 </script>
 
 <template>
-    <div style="padding: 100px">
+    <div class="px-md-12">
         <v-container fluid>
             <router-link to="/"><v-icon icon="mdi-home"></v-icon></router-link>
             <v-row justify="center">
