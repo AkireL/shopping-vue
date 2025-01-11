@@ -12,6 +12,9 @@ import {
     VDialog,
 } from 'vuetify/components'
 import { humanDate } from '@/utils/date';
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const headers: any = [
     { align: 'start', key: 'title', title: 'Titulo'},
@@ -50,15 +53,22 @@ const onRemove = () => {
 }
 
 const addNewList = () => {
+    const id = uuidv4()
     let newItem = {
-        "id": uuidv4(),
+        "id": id,
         "title": humanDate(),
         "noArticle": 0,
         "price": 0, 
-        "items" : [],
+        "items" : [{
+            "id": uuidv4(),
+            "description": "",
+            "price": 0,
+            "check": false,
+        }],
     };
 
     shoppingLists.value = shoppingLists.value ? [...shoppingLists.value, newItem]: [newItem];
+    router.push({ name: 'item', params: { id: id } });
 }
 
 const onDuplicate = (listToDuplicated: List) => {
