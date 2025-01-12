@@ -1,4 +1,4 @@
-import { createVuetify } from 'vuetify';
+import { createVuetify, type ThemeDefinition } from 'vuetify';
 import 'vuetify/styles';
 
 import { createApp } from 'vue';
@@ -13,15 +13,34 @@ const routes = [
   { path: '/row/:id', component: ShoppingList, props: true, name:"item" },
 ];
 
+const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes
 });
 
+const myCustomTheme: ThemeDefinition = {
+  dark: true,
+  colors: {
+    surface: '#212121',
+    primary: '#0853a7',
+    secondary: '#048377',
+    error: '#B00020',
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FB8C00',
+    green: '#1a5e20',
+  },
+}
+
 const vuetify = createVuetify({
-  icons: {
-    defaultSet: 'mdi'
-  }
-});
+  theme: {
+    defaultTheme: isDarkMode ? 'myCustomTheme' : "light",
+    themes: {
+      myCustomTheme,
+    },
+  },
+})
 
 createApp(App).use(router).use(vuetify).mount('#app');
