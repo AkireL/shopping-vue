@@ -95,7 +95,7 @@ const updateRowCheckbox = (item: Item) => {
                     </tr>
                     <tr class="bg-blue-lighten-4">
                         <td colspan="2" style="text-align: end; font-weight: 800;">Total</td>
-                        <td style="text-align: end; font-weight: 800;">$ {{ total }}</td>
+                        <td colspan="2" style="text-align: end; font-weight: 800;">$ {{ total }}</td>
                     </tr>
                 </tbody>
             </v-table>
