@@ -114,7 +114,7 @@ const onRemoveItem = (itemSelected: Item) => {
                     <br>
                     <br>
                     <Articles
-                        title="Pendiente"
+                        title="Pendientes"
                         v-model="unCheckItems"
                         @removeItem="onRemoveItem"
                     ></Articles>
