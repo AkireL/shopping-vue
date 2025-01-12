@@ -100,9 +100,25 @@ const onDuplicate = (listToDuplicated: List) => {
                     :headers="headers"
                     :items="shoppingLists">
                 <template v-slot:item.options="{ item }">
-                    <v-btn icon="mdi-pencil" variant="plain" @click="() => $router.push({ path: `/row/${item.id}` })"></v-btn>
-                    <v-btn icon="mdi-trash-can" variant="plain" :value="item.id" @click="() => {openModal = true; itemToRemove = item}"></v-btn>
-                    <v-btn icon="mdi-clipboard-text-multiple" variant="plain" @click="() => onDuplicate(item)"></v-btn>
+                    <v-btn
+                        @click="() => $router.push({ path: `/row/${item.id}` })"
+                        icon="mdi-pencil"
+                        color="primary"
+                        variant="plain"
+                    ></v-btn>
+                    <v-btn
+                        @click="() => {openModal = true; itemToRemove = item}"
+                        :value="item.id"
+                        icon="mdi-trash-can"
+                        variant="plain"
+                        color="warning"
+                    ></v-btn>
+                    <v-btn
+                        @click="() => onDuplicate(item)"
+                        icon="mdi-clipboard-text-multiple"
+                        color="green"
+                        variant="plain"
+                    ></v-btn>
                 </template>
             </v-data-table>
         </v-card-text>

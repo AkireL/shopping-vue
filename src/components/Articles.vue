@@ -92,7 +92,10 @@ const updateRowCheckbox = (item: Item) => {
                                 @click="() => activateTrash(item)"
                                 icon="mdi-trash-can"
                                 variant="plain"
-                                style="margin: 0; padding: 0; align-items: start"></v-btn>
+                                class="m-0 p-0"
+                                color="warning"
+                                style="align-items: start">
+                            </v-btn>
                         </td>
                     </tr>
                     <tr>
@@ -107,7 +110,7 @@ const updateRowCheckbox = (item: Item) => {
                             </v-btn>
                         </td>
                     </tr>
-                    <tr class="bg-blue-lighten-4">
+                    <tr class="bg-green">
                         <td colspan="2" style="text-align: end; font-weight: 800;">Total</td>
                         <td colspan="2" style="text-align: end; font-weight: 800;">$ {{ total }}</td>
                     </tr>
