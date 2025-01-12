@@ -52,7 +52,7 @@ const updateRowCheckbox = (item: Item) => {
     <v-card v-if="modelValue.length > 0">
         <v-card-title>{{ title }}</v-card-title>
         <v-card-text>
-            <v-table v-if="modelValue.length > 0" density="compact" style="margin-top: 50px">
+            <v-table v-if="modelValue.length > 0" density="compact">
                 <thead>
                     <tr>
                         <th style="width: 50px;"></th>
@@ -77,20 +77,20 @@ const updateRowCheckbox = (item: Item) => {
                                 density="compact"
                             ></v-combobox>
                         </td>
-                        <td style="width: 15%">
+                        <td style="width: 15%; padding: 0;margin: 0;">
                             <v-text-field
                                 v-model.number="item.price"
                                 density="compact"
                                 type="number"
                             ></v-text-field>
                         </td>
-                        <td>
+                        <td style="padding: 0;margin: 0;">
                             <v-btn 
                                 :value="item.id"
                                 @click="() => activateTrash(item)"
                                 icon="mdi-trash-can"
                                 variant="plain"
-                                style="margin: 0; padding: 0"></v-btn>
+                                style="margin: 0; padding: 0; align-items: start"></v-btn>
                         </td>
                     </tr>
                     <tr class="bg-blue-lighten-4">
