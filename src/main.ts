@@ -20,7 +20,7 @@ const router = VueRouter.createRouter({
   routes
 });
 
-const myCustomTheme: ThemeDefinition = {
+const customTheme: ThemeDefinition = {
   dark: true,
   colors: {
     surface: '#212121',
@@ -36,9 +36,9 @@ const myCustomTheme: ThemeDefinition = {
 
 const vuetify = createVuetify({
   theme: {
-    defaultTheme: isDarkMode ? 'myCustomTheme' : "light",
+    defaultTheme: isDarkMode ? 'customTheme' : "light",
     themes: {
-      myCustomTheme,
+      customTheme,
     },
   },
 })

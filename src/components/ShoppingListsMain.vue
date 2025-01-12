@@ -13,8 +13,10 @@ import {
 } from 'vuetify/components'
 import { humanDate } from '@/utils/date';
 import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
 
 const router = useRouter()
+const theme = useTheme()
 
 const headers: any = [
     { align: 'start', key: 'title', title: 'Título'},
@@ -87,18 +89,29 @@ const onDuplicate = (listToDuplicated: List) => {
         [tmp];
 }
 
+function toggleTheme () {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'customTheme'
+}
 </script>
 <template>
     <div style="margin: 30px;">
         <v-card>
             <v-card-title>
-                Tus listas
+                <div class="d-flex justify-space-between">
+                    <h1>Tus listas</h1>
+                    <v-btn
+                        @click="toggleTheme"
+                        icon="mdi-theme-light-dark"
+                    >
+                    </v-btn>
+                </div>
             </v-card-title>
             <v-card-text>
                 <div><v-btn @click="addNewList" icon="mdi-plus" color="green" size="small"></v-btn></div>
                 <v-data-table
                     :headers="headers"
-                    :items="shoppingLists">
+                    :items="shoppingLists"
+                >
                 <template v-slot:item.options="{ item }">
                     <v-btn
                         @click="() => $router.push({ path: `/row/${item.id}` })"
