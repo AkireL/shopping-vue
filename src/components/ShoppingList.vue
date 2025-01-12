@@ -106,17 +106,22 @@ const onRemoveItem = (itemSelected: Item) => {
 <template>
     <div class="px-md-12">
         <v-container fluid>
-            <router-link to="/"><v-icon icon="mdi-home"></v-icon></router-link>
-            <v-row justify="center">
+            <v-btn
+                @click="() => $router.push({ name: 'home'})"
+                icon="mdi-home"
+                color="primary"
+                class="m-2"
+                size="x-small"
+            >
+            </v-btn>
+            <v-row justify="center" class="mt-1">
                 <v-col cols="12">
                     <v-text-field v-model="row.title" label="Nombre"></v-text-field>
-                    <v-btn @click="addItem" color="green" icon="mdi-plus"></v-btn>
-                    <br>
-                    <br>
                     <Articles
                         title="Pendientes"
                         v-model="unCheckItems"
                         @removeItem="onRemoveItem"
+                        @addItem="addItem"
                     ></Articles>
                     <br>
                     <br>

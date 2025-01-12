@@ -17,10 +17,10 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const headers: any = [
-    { align: 'start', key: 'title', title: 'Titulo'},
-    { key: 'noArticle', title: 'Articulo', align: 'end'  },
+    { align: 'start', key: 'title', title: 'Título'},
+    { key: 'noArticle', title: 'Artículo', align: 'end'  },
     { key: 'price', title: 'Precio', align: 'end' },
-    { key: 'options', sortable:false, title: 'Opciones' },
+    { key: 'options', sortable:false, title: '' },
 ];
 
 const shoppingLists = ref<List[]>();
@@ -92,7 +92,7 @@ const onDuplicate = (listToDuplicated: List) => {
     <div style="margin: 30px;">
         <v-card>
             <v-card-title>
-                Your lists
+                Tus listas
             </v-card-title>
             <v-card-text>
                 <div><v-btn @click="addNewList" icon="mdi-plus" color="green" size="small"></v-btn></div>

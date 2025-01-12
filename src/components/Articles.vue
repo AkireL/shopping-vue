@@ -31,7 +31,7 @@ const open = ref<boolean>(false);
 const itemSelected = ref<Item | null>(null);
 const total = computed(() => props.modelValue.reduce((current: number, item: Item) => current + (item?.price ??0), 0));
 
-const emit = defineEmits(["removeItem"]);
+const emit = defineEmits(["removeItem", "addItem"]);
 
 const activateTrash = (item: Item) => {
     open.value = true
@@ -47,6 +47,7 @@ const onRemove = () => {
 const updateRowCheckbox = (item: Item) => {
     item.check = ! item.check;
 }
+
 </script>
 <template>
     <v-card v-if="modelValue.length > 0">
@@ -68,6 +69,7 @@ const updateRowCheckbox = (item: Item) => {
                                 :model-value="item.check"
                                 @update:modelValue="() => updateRowCheckbox(item)"
                                 color="green"
+                                density="compact"
                             ></v-checkbox>
                         </td>
                         <td>
@@ -91,6 +93,18 @@ const updateRowCheckbox = (item: Item) => {
                                 icon="mdi-trash-can"
                                 variant="plain"
                                 style="margin: 0; padding: 0; align-items: start"></v-btn>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <v-btn 
+                                @click="() => $emit('addItem')"
+                                icon="mdi-plus"
+                                color="secondary"
+                                size="x-small"
+                                class="my-2"
+                                >
+                            </v-btn>
                         </td>
                     </tr>
                     <tr class="bg-blue-lighten-4">
