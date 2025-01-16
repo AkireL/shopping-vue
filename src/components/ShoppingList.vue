@@ -70,7 +70,7 @@ const loadFromStorage = () => {
     });
 }
 
-const addItem = () => {
+const addItem = (check: boolean = false) => {
     let rowTmp = { ...row.value };
 
     rowTmp.items = [
@@ -79,7 +79,7 @@ const addItem = () => {
             'id': uuidv4(),
             'description': "",
             'price': null,
-            'check': false,
+            'check': check,
         } as Item,
     ];
 
@@ -129,6 +129,7 @@ const onRemoveItem = (itemSelected: Item) => {
                         title="Listos"
                         v-model="checkItems"
                         @removeItem="(event) => onRemoveItem(event)"
+                        @addItem="() => addItem(true)"
                     ></Articles>
                 </v-col>
             </v-row>
